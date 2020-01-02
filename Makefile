@@ -12,31 +12,33 @@ HERE := $(shell cd -P -- $(shell dirname -- $$0) && pwd -P)
 all: run-compile
 
 export LATESTURL := $(shell curl -is https://aka.ms/windev_VM_virtualbox | grep ^Location | cut -d' ' -f2)
-export SHORTNAME := $(shell basename $(LATESTURL) | cut -d'.' -f1)
-export VMNAME := "windows-vm - $(SHORTNAME)"
+export VMVERSION := $(shell basename $(LATESTURL) | cut -d'.' -f1)
+export VMPACKAGE := $(HOME)/Downloads/$(VMVERSION)
+
+export VMNAME := "windows-vm - $(VMVERSION)"
 
 .PHONY: check-downloads
 check-downloads:
 	@cd Shared/Downloads && md5sum --quiet -c MD5SUMS
 
-$(SHORTNAME).zip:
-	@curl -o $(SHORTNAME).zip $(LATESTURL)
+$(VMPACKAGE).zip:
+	@curl -o $(VMPACKAGE).zip $(LATESTURL)
 
 .PHONY: download-zip
-download-zip: $(SHORTNAME).zip
+download-zip: $(VMPACKAGE).zip
 
-$(SHORTNAME).ova: $(SHORTNAME).zip
-	@unzip $(SHORTNAME).zip
-	@touch $(SHORTNAME).ova
+$(VMPACKAGE).ova: $(VMPACKAGE).zip
+	@unzip -d $(shell dirname $(VMPACKAGE).zip) $(VMPACKAGE).zip
+	@touch $(VMPACKAGE).ova
 
 .PHONY: extract-ova
-extract-ova: $(SHORTNAME).ova
+extract-ova: $(VMPACKAGE).ova
 
 .PHONY: import-ova
-import-ova: $(SHORTNAME).ova
+import-ova: $(VMPACKAGE).ova
 	@if ! VBoxManage list vms | grep -cq $(VMNAME);				\
 	then									\
-	    VBoxManage import $(SHORTNAME).ova					\
+	    VBoxManage import $(VMPACKAGE).ova					\
 	      --vsys 0								\
 	      --vmname $(VMNAME)						\
 	      --ostype Windows10_64						\

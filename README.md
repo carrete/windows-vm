@@ -15,7 +15,8 @@ and [curl](https://curl.haxx.se) are also required.
 
 This will download [the latest Window 10 virtual machine](https://developer.microsoft.com/en-us/windows/downloads/virtual-machines),
 and import this into VirtualBox. This will take several hours to complete
-depending on network bandwidth, and CPU and hard-drive access speeds.
+depending on network bandwidth, and CPU and hard-drive access speeds. The
+downloaded assets will be stored in `$HOME/Downloads`.
 
 * The directory `Shared/` in this repository is available as shared drive `Z:`
   in the virtual machine.
