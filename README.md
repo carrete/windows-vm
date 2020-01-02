@@ -26,7 +26,9 @@ depending on network bandwidth, and CPU and hard-drive access speeds.
 
 ## Provision virtual machine
 
-TODO:
+Please follow the instructions in the wiki to provison the virtual machine.
+
+* https://gitlab.com/tvaughan/windows-vm/-/wikis/home#provision-virtual-machine
 
 ## Run `make run-compile`
 
