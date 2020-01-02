@@ -15,7 +15,9 @@ export LATESTURL := $(shell curl -is https://aka.ms/windev_VM_virtualbox | grep 
 export VMVERSION := $(shell basename $(LATESTURL) | cut -d'.' -f1)
 export VMPACKAGE := $(HOME)/Downloads/$(VMVERSION)
 
-export VMNAME := "windows-vm - $(VMVERSION)"
+VMPREFIX ?= windows-vm
+
+export VMNAME := "$(VMPREFIX) - $(VMVERSION)"
 
 .PHONY: check-downloads
 check-downloads:
