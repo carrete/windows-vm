@@ -1,3 +1,5 @@
+Set-ExecutionPolicy -ExecutionPolicy Bypass
+
 Set-Location -Path "Z:\"
 
 $AtStartup = New-ScheduledTaskTrigger -AtStartup
