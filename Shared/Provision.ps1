@@ -13,3 +13,9 @@ Register-ScheduledTask -User "NT AUTHORITY\SYSTEM"                              
   -Trigger $AtStartup -TaskName $ScriptName -Action $ScriptAction -Force
 
 & "Z:\SetupRemoteAccess.ps1"
+
+if (Test-Path -Path "Z:\3rdPartySetup.ps1") {
+   & "Z:\3rdPartySetup.ps1"
+}
+
+Read-Host "Press Enter to continue..." | Out-Null
