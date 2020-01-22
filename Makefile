@@ -1,10 +1,10 @@
-# -*- coding: utf-8; mode: make; -*-
+# -*- coding: utf-8; mode: makefile-gmake; -*-
 # https://gitlab.com/tvaughan/windows-vm
 
 MAKEFLAGS += --warn-undefined-variables
 
 SHELL := bash
-.SHELLFLAGS := -euo pipefail
+.SHELLFLAGS := $(or ${SHELLFLAGS},${SHELLFLAGS},-euo pipefail -c)
 
 HERE := $(shell cd -P -- $(shell dirname -- $$0) && pwd -P)
 
