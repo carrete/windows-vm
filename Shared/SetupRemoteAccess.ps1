@@ -9,7 +9,7 @@ $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 Set-ItemProperty -Force $RegPath "AutoAdminLogon" -Value "1" -type String
 
 $Username = "User"
-$Password = "password"
+$Password = "password1!"
 
 $UserAccount = Get-LocalUser -Name "$Username"
 $UserAccount | Set-LocalUser -Password (ConvertTo-SecureString -Force -AsPlainText "$Password")

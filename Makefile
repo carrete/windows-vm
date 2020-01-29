@@ -127,7 +127,7 @@ run-%: vm-start
 	    -v "$(PWD)":/mnt/workdir                                            \
 	    registry.gitlab.com/tvaughan/docker-ubuntu:18.04                    \
 	    sshpass                                                             \
-	    -p password                                                         \
+	    -p password1!                                                       \
 	    ssh                                                                 \
 	    -o StrictHostKeyChecking=no                                         \
 	    -p 9022                                                             \
