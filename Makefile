@@ -120,9 +120,25 @@ vm-shutdown:
 	    VBoxManage controlvm $(VMNAME) poweroff;                            \
 	fi
 
-.PHONY: run-%
-run-%: vm-start
+.PHONY: pull-latest
+pull-latest:
 	@docker pull registry.gitlab.com/tvaughan/docker-ubuntu:18.04 > /dev/null
+
+.PHONY: vm-shell
+vm-shell: pull-latest vm-start
+	@docker run --rm -it                                                    \
+	    -v "$(PWD)":/mnt/workdir                                            \
+	    registry.gitlab.com/tvaughan/docker-ubuntu:18.04                    \
+	    sshpass                                                             \
+	    -p password1!                                                       \
+	    ssh                                                                 \
+	    -o StrictHostKeyChecking=no                                         \
+	    -p 9022                                                             \
+	    User@host.docker.internal                                           \
+	    #
+
+.PHONY: run-%
+run-%: pull-latest vm-start
 	@docker run --rm -it                                                    \
 	    -v "$(PWD)":/mnt/workdir                                            \
 	    registry.gitlab.com/tvaughan/docker-ubuntu:18.04                    \
