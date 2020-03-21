@@ -2,6 +2,11 @@
 
 Only Linux and macOS are supported.
 
+[WSL](https://docs.microsoft.com/en-us/windows/wsl/wsl2-install) should work
+although windows-vm has not been tested with WSL. windows-vm is not specific
+to Linux and macOS, but command-line tools such as make, grep, and awk are
+required which are readily available on these OSes.
+
 ## Download and install:
 
 * [Git LFS](https://git-lfs.github.com)
