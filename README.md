@@ -27,8 +27,8 @@ downloaded assets will be stored in `$HOME/Downloads`.
   in the virtual machine.
 
 * SSH traffic to `localhost` on port `9022` is forwarded to the virtual
-  machine. Connect to the virtual machine with `ssh User@localhost -p 9022`.
-  Password is `password`.
+  machine. Open a remote CMD prompt on the virtual machine with `make vm-shell`,
+  or `ssh User@localhost -p 9022`. Password is `password1!`.
 
 ## Provision virtual machine
 
