@@ -12,37 +12,37 @@ HERE := $(shell cd -P -- $(shell dirname -- $$0) && pwd -P)
 all: run-compile
 
 export LATESTURL := $(shell curl -is https://aka.ms/windev_VM_virtualbox | grep ^Location | cut -d' ' -f2)
-export VMVERSION := $(shell basename $(LATESTURL) | cut -d'.' -f1)
-export VMPACKAGE := $(HOME)/Downloads/$(VMVERSION)
+export WINDOWS_VM_VERSION := $(shell basename $(LATESTURL) | cut -d'.' -f1)
+export WINDOWS_VM_ARCHIVE := $(HOME)/Downloads/$(WINDOWS_VM_VERSION)
 
-VMPREFIX ?= windows-vm
+WINDOWS_VM_PREFIX ?= windows-vm
 
-export VMNAME := "$(VMPREFIX) - $(VMVERSION)"
+export WINDOWS_VM_NAME := "$(WINDOWS_VM_PREFIX) - $(WINDOWS_VM_VERSION)"
 
 .PHONY: check-downloads
 check-downloads:
 	@cd Shared/Downloads && md5sum --quiet -c MD5SUMS
 
-$(VMPACKAGE).zip:
-	@curl -o $(VMPACKAGE).zip $(LATESTURL)
+$(WINDOWS_VM_ARCHIVE).zip:
+	@curl -o $(WINDOWS_VM_ARCHIVE).zip $(LATESTURL)
 
 .PHONY: download-zip
-download-zip: $(VMPACKAGE).zip
+download-zip: $(WINDOWS_VM_ARCHIVE).zip
 
-$(VMPACKAGE).ova: $(VMPACKAGE).zip
-	@unzip -d $(shell dirname $(VMPACKAGE).zip) $(VMPACKAGE).zip
-	@touch $(VMPACKAGE).ova
+$(WINDOWS_VM_ARCHIVE).ova: $(WINDOWS_VM_ARCHIVE).zip
+	@unzip -d $(shell dirname $(WINDOWS_VM_ARCHIVE).zip) $(WINDOWS_VM_ARCHIVE).zip
+	@touch $(WINDOWS_VM_ARCHIVE).ova
 
 .PHONY: extract-ova
-extract-ova: $(VMPACKAGE).ova
+extract-ova: $(WINDOWS_VM_ARCHIVE).ova
 
 .PHONY: import-ova
-import-ova: $(VMPACKAGE).ova
-	@if ! VBoxManage list vms | grep -cq $(VMNAME);                         \
+import-ova: $(WINDOWS_VM_ARCHIVE).ova
+	@if ! VBoxManage list vms | grep -cq $(WINDOWS_VM_NAME);                \
 	then                                                                    \
-	    VBoxManage import $(VMPACKAGE).ova                                  \
+	    VBoxManage import $(WINDOWS_VM_ARCHIVE).ova                         \
 	      --vsys 0                                                          \
-	      --vmname $(VMNAME)                                                \
+	      --vmname $(WINDOWS_VM_NAME)                                       \
 	      --ostype Windows10_64                                             \
 	      --cpus 2                                                          \
 	      --memory 2048                                                     \
@@ -51,43 +51,43 @@ import-ova: $(VMPACKAGE).ova
 
 .PHONY: delete-port-forward-rules
 delete-port-forward-rules:
-	@if ! VBoxManage list runningvms | grep -cq $(VMNAME);                  \
-	then                                                                    \
-	    IFS=$$'\n\t';                                                       \
-	    for RULE in $$(VBoxManage showvminfo $(VMNAME) --machinereadable    \
-	      | grep ^Forwarding | awk -F '[",]' '{ print $$2; }');             \
-	    do                                                                  \
-	        VBoxManage modifyvm $(VMNAME) --natpf1 delete "$$RULE";         \
-	    done;                                                               \
+	@if ! VBoxManage list runningvms | grep -cq $(WINDOWS_VM_NAME);                         \
+	then                                                                                    \
+	    IFS=$$'\n\t';                                                                       \
+	    for RULE in $$(VBoxManage showvminfo $(WINDOWS_VM_NAME) --machinereadable           \
+	      | grep ^Forwarding | awk -F '[",]' '{ print $$2; }');                             \
+	    do                                                                                  \
+	        VBoxManage modifyvm $(WINDOWS_VM_NAME) --natpf1 delete "$$RULE";                \
+	    done;                                                                               \
 	fi
 
 .PHONY: set-port-forward-rules
 set-port-forward-rules: import-ova delete-port-forward-rules
-	@if ! VBoxManage list runningvms | grep -cq $(VMNAME);                  \
-	then                                                                    \
-	    VBoxManage modifyvm $(VMNAME) --natpf1 "openssh,tcp,,9022,,22";     \
+	@if ! VBoxManage list runningvms | grep -cq $(WINDOWS_VM_NAME);                         \
+	then                                                                                    \
+	    VBoxManage modifyvm $(WINDOWS_VM_NAME) --natpf1 "openssh,tcp,,9022,,22";            \
 	fi
 
 .PHONY: delete-shared-folder-mappings
 delete-shared-folder-mappings:
-	@if ! VBoxManage list runningvms | grep -cq $(VMNAME);                  \
-	then                                                                    \
-	    IFS=$$'\n\t';                                                       \
-	    for MAPPING in $$(VBoxManage showvminfo $(VMNAME) --machinereadable \
-	      | grep ^SharedFolderNameMachineMapping | awk -F '[",]' '{ print $$2; }'); \
-	    do                                                                  \
-	        VBoxManage sharedfolder remove $(VMNAME) --name "$$MAPPING";    \
-	    done;                                                               \
+	@if ! VBoxManage list runningvms | grep -cq $(WINDOWS_VM_NAME);                         \
+	then                                                                                    \
+	    IFS=$$'\n\t';                                                                       \
+	    for MAPPING in $$(VBoxManage showvminfo $(WINDOWS_VM_NAME) --machinereadable        \
+	      | grep ^SharedFolderNameMachineMapping | awk -F '[",]' '{ print $$2; }');         \
+	    do                                                                                  \
+	        VBoxManage sharedfolder remove $(WINDOWS_VM_NAME) --name "$$MAPPING";           \
+	    done;                                                                               \
 	fi
 
 .PHONY: set-shared-folder-mappings
 set-shared-folder-mappings: import-ova delete-shared-folder-mappings
-	@if ! VBoxManage list runningvms | grep -cq $(VMNAME);                  \
+	@if ! VBoxManage list runningvms | grep -cq $(WINDOWS_VM_NAME);         \
 	then                                                                    \
 	    for RELPATH in $(HERE)/Shared;                                      \
 	    do                                                                  \
 	        ABSPATH=$$(readlink -f "$$RELPATH");                            \
-	        VBoxManage sharedfolder add $(VMNAME)                           \
+	        VBoxManage sharedfolder add $(WINDOWS_VM_NAME)                  \
 	          --name $$(basename $$ABSPATH)                                 \
 	          --automount                                                   \
 	          --hostpath $$ABSPATH;                                         \
@@ -96,11 +96,11 @@ set-shared-folder-mappings: import-ova delete-shared-folder-mappings
 
 .PHONY: vm-name
 vm-name:
-	@echo $(VMNAME)
+	@echo $(WINDOWS_VM_NAME)
 
 .PHONY: vm-status
 vm-status:
-	@VBoxManage showvminfo $(VMNAME) --machinereadable                      \
+	@VBoxManage showvminfo $(WINDOWS_VM_NAME) --machinereadable             \
 	  | grep ^VMState= | awk -F '[",]' '{ print $$2; }'
 
 .PHONY: vm-create
@@ -108,16 +108,16 @@ vm-create: check-downloads set-port-forward-rules set-shared-folder-mappings
 
 .PHONY: vm-start
 vm-start: vm-create
-	@if ! VBoxManage list runningvms | grep -cq $(VMNAME);                  \
+	@if ! VBoxManage list runningvms | grep -cq $(WINDOWS_VM_NAME);         \
 	then                                                                    \
-	    VBoxManage startvm $(VMNAME) --type headless;                       \
+	    VBoxManage startvm $(WINDOWS_VM_NAME) --type headless;              \
 	fi
 
 .PHONY: vm-shutdown
 vm-shutdown:
-	@if VBoxManage list runningvms | grep -cq $(VMNAME);                    \
+	@if VBoxManage list runningvms | grep -cq $(WINDOWS_VM_NAME);           \
 	then                                                                    \
-	    VBoxManage controlvm $(VMNAME) poweroff;                            \
+	    VBoxManage controlvm $(WINDOWS_VM_NAME) poweroff;                   \
 	fi
 
 .PHONY: pull-latest
