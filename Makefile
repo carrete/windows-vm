@@ -1,5 +1,5 @@
 # -*- coding: utf-8; mode: makefile-gmake; -*-
-# https://gitlab.com/tvaughan/windows-vm
+# https://github.com/carrete/windows-vm
 
 MAKEFLAGS += --warn-undefined-variables
 
@@ -122,13 +122,13 @@ vm-shutdown:
 
 .PHONY: pull-latest
 pull-latest:
-	@docker pull registry.gitlab.com/tvaughan/docker-ubuntu:18.04 > /dev/null
+	@docker pull registry.github.com/carrete/docker-ubuntu:18.04 > /dev/null
 
 .PHONY: vm-shell
 vm-shell: pull-latest vm-start
 	@docker run --rm -it                                                    \
 	    -v "$(PWD)":/mnt/workdir                                            \
-	    registry.gitlab.com/tvaughan/docker-ubuntu:18.04                    \
+	    registry.github.com/carrete/docker-ubuntu:18.04                    \
 	    sshpass                                                             \
 	    -p password1!                                                       \
 	    ssh                                                                 \
@@ -141,7 +141,7 @@ vm-shell: pull-latest vm-start
 run-%: pull-latest vm-start
 	@docker run --rm -it                                                    \
 	    -v "$(PWD)":/mnt/workdir                                            \
-	    registry.gitlab.com/tvaughan/docker-ubuntu:18.04                    \
+	    registry.github.com/carrete/docker-ubuntu:18.04                    \
 	    sshpass                                                             \
 	    -p password1!                                                       \
 	    ssh                                                                 \

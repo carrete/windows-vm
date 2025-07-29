@@ -34,7 +34,7 @@ downloaded assets will be stored in `$HOME/Downloads`.
 
 Please follow the instructions in the wiki to provison the virtual machine.
 
-* https://gitlab.com/tvaughan/windows-vm/-/wikis/home#provision-virtual-machine
+* https://github.com/carrete/windows-vm/-/wikis/home#provision-virtual-machine
 
 ## Run `make run-compile`
 
